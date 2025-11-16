@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ducky-app
+    ports:
+      - "2222:2222"
+    volumes:
+      # 挂载代码目录（开发时使用，生产环境可移除）
+      - .:/app
+      # 挂载数据库文件目录，确保数据持久化
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - ducky-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ducky-frontend
+    ports:
+      - "3002:80"
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - ducky-network
+
+networks:
+  ducky-network:
+    driver: bridge
+

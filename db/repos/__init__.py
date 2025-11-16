@@ -27,6 +27,8 @@ class Repo:
     async def create(self, params: Dict[str, Any]) -> Base:
         model = self.Model(**params)
         self.session.add(model)
+        await self.session.flush()  # 刷新以获取 id
+        await self.session.refresh(model)  # 刷新模型以获取所有字段
         return model
 
     async def update(self, id: int, params: Dict[str, Any]) -> Base:
